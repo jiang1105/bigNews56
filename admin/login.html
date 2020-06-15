@@ -92,6 +92,10 @@
             $('#myModal').modal();
             $('.modal-body').text(backData.msg);
             if (backData.code == 200) {
+
+              // 把返回的token给保存起来
+              localStorage.setItem('token',backData.token);
+              
               // 模态框的使用第二部：利用模态框的方法
               $('#myModal').on('hidden.bs.modal', function (e) {
               location.href='./index.html';
