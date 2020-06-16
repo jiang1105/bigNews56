@@ -101,16 +101,20 @@
     <script>
         $(function () {
             // 1.已进入页面就发送ajax请求获取所有的文章类别，并且通过模板引擎
-            $.ajax({
-                url: BigNew.category_list,
-                success: function (backData) {
-                    console.log(backData);
-                    if (backData.code == 200) {
-                        var res = template('category_list', backData);
-                        $('tbody').html(res);
-                    };
-                },
-            });
+            function getData() {
+                $.ajax({
+                    url: BigNew.category_list,
+                    success: function (backData) {
+                        console.log(backData);
+                        if (backData.code == 200) {
+                            var res = template('category_list', backData);
+                            $('tbody').html(res);
+                        };
+                    },
+                });
+            };
+            getData();
+
             // 2.使用模态框show.bs.modal方法模态框显示的时候立即调用,判断是新增弹出来的模态框还是编辑弹出来的模态框
             // show 方法调用之后立即触发该事件。如果是通过点击某个作为触发器的元素，则此元素可以通过事件的 relatedTarget 属性进行访问。
             $('#myModal').on('show.bs.modal', function (e) {
@@ -125,8 +129,45 @@
                     $('#myModalLabel').text('编辑分类');
                     $('#addOrEdit').text('编辑').addClass('btn-success').removeClass('btn-primary');
                 };
+            });
 
-            })
+            // 3.给模态框中的新增或者编辑按钮设置点击事件
+            $('#addOrEdit').on('click', function () {
+                // 3.1判断是新增还是编辑
+                // if($(this).text=='新增'){
+                //     alert('新增');
+                // }else{
+                //     alert('编辑');
+                // };
+                if ($(this).hasClass('btn-primary')) {
+                    alert('新增');
+                    // 3.2获取用户输入的文章分类名和文章分类别名
+                    var categoryName = $('#recipient-name').val().trim();
+                    var categorySlug = $('#message-text').val().trim();
+                    $.ajax({
+                        type: "post",
+                        url: BigNew.category_add,
+                        data: {
+                            name: categoryName,
+                            slug: categorySlug,
+                        },
+                        success: function (backData) {
+                            console.log(backData);
+                            if (backData.code == 201) {
+                                alert(backData.msg);
+                                // 3.3新增成功加载数据重新渲染在页面
+                                getData();
+                                // 3.4把模态框隐藏，把模态框里面输入的文本情况
+                                $('#myModal').modal('hide');
+                                $('#recipient-name').val("");
+                                $('#message-text').val("");
+                            };
+                        },
+                    });
+                } else {
+                    alert('编辑');
+                };
+            });
         });
     </script>
 </body>
