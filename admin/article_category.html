@@ -52,33 +52,34 @@
         </div>
     </div>
 
-    <!-- 模态框 -->
+    <!-- 编辑和新增使用的模态框 -->
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <h4 class="modal-title" id="myModalLabel">New message</h4>
-            </div>
-            <div class="modal-body">
-              <form>
-                <div class="form-group">
-                  <label for="recipient-name" class="control-label">Recipient:</label>
-                  <input type="text" class="form-control" id="recipient-name">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">New message</h4>
                 </div>
-                <div class="form-group">
-                  <label for="message-text" class="control-label">Message:</label>
-                  <input type="text" class="form-control" id="message-text"></input>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">分类名称:</label>
+                            <input type="text" class="form-control" id="recipient-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="message-text" class="control-label">分类别名:</label>
+                            <input type="text" class="form-control" id="message-text"></input>
+                        </div>
+                    </form>
                 </div>
-              </form>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id='addOrEdit'>Send message</button>
+                </div>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary">Send message</button>
-            </div>
-          </div>
         </div>
-      </div>
+    </div>
 
 
 
@@ -90,6 +91,7 @@
             <td>{{v.name}}</td>
             <td>{{v.slug}}</td>
             <td class="text-center">
+                <!-- 注意点：data-toggle="modal" data-target="#myModal"是让模态框弹出的用法的两个属性和属性值 -->
                 <a href="javascript:void(0)" data-toggle="modal" data-target="#myModal" class=" btn btn-info btn-xs">编辑</a>
                 <a href="javascript:void(0)" data-id="{{v.id}}" class="btn btn-danger btn-xs">删除</a>
             </td>
@@ -109,7 +111,22 @@
                     };
                 },
             });
-            // 2.
+            // 2.使用模态框show.bs.modal方法模态框显示的时候立即调用,判断是新增弹出来的模态框还是编辑弹出来的模态框
+            // show 方法调用之后立即触发该事件。如果是通过点击某个作为触发器的元素，则此元素可以通过事件的 relatedTarget 属性进行访问。
+            $('#myModal').on('show.bs.modal', function (e) {
+                // e.relatedTarget打印出来的是DOM获取的元素
+                console.log(e.relatedTarget);
+                if ($('#xinzengfenlei')[0] == e.relatedTarget) {
+                    // alert('新增');
+                    $('#myModalLabel').text('新增分类');
+                    $('#addOrEdit').text('新增').addClass('btn-primary').removeClass('btn-success');
+                } else {
+                    // alert('编辑');
+                    $('#myModalLabel').text('编辑分类');
+                    $('#addOrEdit').text('编辑').addClass('btn-success').removeClass('btn-primary');
+                };
+
+            })
         });
     </script>
 </body>
