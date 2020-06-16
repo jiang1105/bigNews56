@@ -96,7 +96,7 @@
             <td class="text-center">
                 <!-- 注意点：data-toggle="modal" data-target="#myModal"是让模态框弹出的用法的两个属性和属性值 -->
                 <a href="javascript:void(0)" data-id="{{v.id}}" data-toggle="modal" data-target="#myModal" class=" btn btn-info btn-xs">编辑</a>
-                <a href="javascript:void(0)" data-id="{{v.id}}" class="btn btn-danger btn-xs">删除</a>
+                <a href="javascript:void(0)" data-id="{{v.id}}" class="btn btn-danger btn-xs btn-delete">删除</a>
             </td>
         </tr>
         {{/each}}
@@ -133,9 +133,9 @@
                     $('#addOrEdit').text('编辑').addClass('btn-success').removeClass('btn-primary');
 
                     // 2.1获取当前点击的编辑按钮的分类的名字和别名
-                    var categroyId=$(e.relatedTarget).attr('data-id');
-                    var categorySlug=$( e.relatedTarget).parent().prev().text().trim();
-                    var categoryName=$( e.relatedTarget).parent().prev().prev().text().trim();
+                    var categroyId = $(e.relatedTarget).attr('data-id');
+                    var categorySlug = $(e.relatedTarget).parent().prev().text().trim();
+                    var categoryName = $(e.relatedTarget).parent().prev().prev().text().trim();
                     // 2.2把值赋值给模态框对应的标签
                     $('#categroyId').val(categroyId);
                     $('#recipient-name').val(categorySlug);
@@ -179,20 +179,20 @@
                 } else {
                     // alert('编辑');
                     // 3.5获取要编辑的文章分类的id 修改后的内容
-                    var categroyId=$('#categroyId').val().trim();
+                    var categroyId = $('#categroyId').val().trim();
                     var categoryName = $('#recipient-name').val().trim();
                     var categorySlug = $('#message-text').val().trim();
                     $.ajax({
-                        type:"post",
-                        url:BigNew.category_edit,
-                        data:{
-                            id:categroyId,
-                            name:categoryName,
-                            slug:categorySlug,
+                        type: "post",
+                        url: BigNew.category_edit,
+                        data: {
+                            id: categroyId,
+                            name: categoryName,
+                            slug: categorySlug,
                         },
-                        success:function(backData){
+                        success: function (backData) {
                             console.log(backData);
-                            if(backData.code==200){
+                            if (backData.code == 200) {
                                 alert(backData.msg);
                                 getData();
                                 $('#myModal').modal('hide');
@@ -204,7 +204,35 @@
                 };
             });
             // 4.给模态框中的取消按钮设置一个点击事件：清空模态框中的内容
-            $('')
+            $('#btnCancel').on('click', function () {
+                // 方法一
+                // $('#recipient-name').val("");
+                // $('#message-text').val("");
+                // 方法二:reset()是DOM元素点出来的
+                $('#myModal form')[0].reset();
+            });
+
+            // 5.删除按钮事件
+            $('tbody').on('click', '.btn-delete', function () {
+                var categoryId = $(this).attr('data-id');
+                // 5.2发送ajax请求
+              if(confirm('你确定删除吗？')){
+                $.ajax({
+                    type: 'post',
+                    url: BigNew.category_delete,
+                    data: {
+                        id: categoryId,
+                    },
+                    success: function (backData) {
+                        console.log(backData);
+                        if (backData.code == 204) {
+                            alert(backData.msg);
+                            getData();
+                        };
+                    },
+                });
+              };
+            });
         });
     </script>
 </body>
