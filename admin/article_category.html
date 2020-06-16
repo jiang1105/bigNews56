@@ -63,6 +63,9 @@
                 </div>
                 <div class="modal-body">
                     <form>
+
+                        <!-- 隐藏域：保存当前点击的文章分类的id -->
+                        <input type="hidden" id='categroyId' name='id'>
                         <div class="form-group">
                             <label for="recipient-name" class="control-label">分类名称:</label>
                             <input type="text" class="form-control" id="recipient-name">
@@ -74,7 +77,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-default" id='btnCancel' data-dismiss="modal">取消</button>
                     <button type="button" class="btn btn-primary" id='addOrEdit'>Send message</button>
                 </div>
             </div>
@@ -92,7 +95,7 @@
             <td>{{v.slug}}</td>
             <td class="text-center">
                 <!-- 注意点：data-toggle="modal" data-target="#myModal"是让模态框弹出的用法的两个属性和属性值 -->
-                <a href="javascript:void(0)" data-toggle="modal" data-target="#myModal" class=" btn btn-info btn-xs">编辑</a>
+                <a href="javascript:void(0)" data-id="{{v.id}}" data-toggle="modal" data-target="#myModal" class=" btn btn-info btn-xs">编辑</a>
                 <a href="javascript:void(0)" data-id="{{v.id}}" class="btn btn-danger btn-xs">删除</a>
             </td>
         </tr>
@@ -128,6 +131,15 @@
                     // alert('编辑');
                     $('#myModalLabel').text('编辑分类');
                     $('#addOrEdit').text('编辑').addClass('btn-success').removeClass('btn-primary');
+
+                    // 2.1获取当前点击的编辑按钮的分类的名字和别名
+                    var categroyId=$(e.relatedTarget).attr('data-id');
+                    var categorySlug=$( e.relatedTarget).parent().prev().text().trim();
+                    var categoryName=$( e.relatedTarget).parent().prev().prev().text().trim();
+                    // 2.2把值赋值给模态框对应的标签
+                    $('#categroyId').val(categroyId);
+                    $('#recipient-name').val(categorySlug);
+                    $('#message-text').val(categoryName);
                 };
             });
 
@@ -140,7 +152,7 @@
                 //     alert('编辑');
                 // };
                 if ($(this).hasClass('btn-primary')) {
-                    alert('新增');
+                    // alert('新增');
                     // 3.2获取用户输入的文章分类名和文章分类别名
                     var categoryName = $('#recipient-name').val().trim();
                     var categorySlug = $('#message-text').val().trim();
@@ -154,7 +166,7 @@
                         success: function (backData) {
                             console.log(backData);
                             if (backData.code == 201) {
-                                alert(backData.msg);
+                                // alert(backData.msg);
                                 // 3.3新增成功加载数据重新渲染在页面
                                 getData();
                                 // 3.4把模态框隐藏，把模态框里面输入的文本情况
@@ -165,9 +177,34 @@
                         },
                     });
                 } else {
-                    alert('编辑');
+                    // alert('编辑');
+                    // 3.5获取要编辑的文章分类的id 修改后的内容
+                    var categroyId=$('#categroyId').val().trim();
+                    var categoryName = $('#recipient-name').val().trim();
+                    var categorySlug = $('#message-text').val().trim();
+                    $.ajax({
+                        type:"post",
+                        url:BigNew.category_edit,
+                        data:{
+                            id:categroyId,
+                            name:categoryName,
+                            slug:categorySlug,
+                        },
+                        success:function(backData){
+                            console.log(backData);
+                            if(backData.code==200){
+                                alert(backData.msg);
+                                getData();
+                                $('#myModal').modal('hide');
+                                $('#recipient-name').val("");
+                                $('#message-text').val("");
+                            };
+                        },
+                    });
                 };
             });
+            // 4.给模态框中的取消按钮设置一个点击事件：清空模态框中的内容
+            $('')
         });
     </script>
 </body>
