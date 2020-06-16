@@ -120,6 +120,37 @@
                     window.location.href = './login.html'
                 };
             });
+
+
+            // 3.左侧导航栏一级菜单（div）点击事件
+            $('.level01').on('click',function(){
+                // 3.1当前点击的有样式其余的没有
+                $(this).addClass('active').siblings('div').removeClass('active');
+                // 3.2判断当前点击的一级菜单是否是文章管理
+                if($(this).index()==1){
+                    // 3.2.1把二级菜单显示就隐藏隐藏就显示
+                    $('ul.level02').slideToggle();
+                    // 3.2.2让字体图标旋转
+                    $(this).find('b').toggleClass('rotate0');
+
+
+                    // 点击一级菜单显示二级菜单第一个一级菜单方法一给第一个二级菜单设置点击事件
+                    // $('ul.level02>li').first().trigger('onclick');
+
+                    // 点击一级菜单
+                    $('ul.level02>li:eq(0)>a')[0].click();
+                };
+            });
+
+            // 4.左侧导航栏危机菜单Li标签设置点击事件
+            $('ul.level02>li').on('click',function(){
+                // 4.1档期那点击的标签设置active，其余的删除
+                $(this).addClass('active').siblings('li').removeClass('active');
+                // 4.2待解决的需求：点击一级菜单‘文章管理’有一个默认的二级菜单的内容显示在iframe
+                // 4.2方法二：
+
+            });
+
         });
     </script>
 </body>
