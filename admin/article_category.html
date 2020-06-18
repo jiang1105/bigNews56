@@ -68,11 +68,11 @@
                         <input type="hidden" id='categroyId' name='id'>
                         <div class="form-group">
                             <label for="recipient-name" class="control-label">分类名称:</label>
-                            <input type="text" class="form-control" id="recipient-name">
+                            <input type="text" class="form-control" id="recipient-name" name="name">
                         </div>
                         <div class="form-group">
                             <label for="message-text" class="control-label">分类别名:</label>
-                            <input type="text" class="form-control" id="message-text"></input>
+                            <input type="text" class="form-control" id="message-text" name="slug"></input>
                         </div>
                     </form>
                 </div>
@@ -182,14 +182,22 @@
                     var categroyId = $('#categroyId').val().trim();
                     var categoryName = $('#recipient-name').val().trim();
                     var categorySlug = $('#message-text').val().trim();
+
+
+                    // formData需要后端的支持，而且formData还是js的方法
+                    // serialize不需要后端的支持,
+                    var data= $('#myModal form').serialize();
+                    
+
                     $.ajax({
                         type: "post",
                         url: BigNew.category_edit,
-                        data: {
-                            id: categroyId,
-                            name: categoryName,
-                            slug: categorySlug,
-                        },
+                        // data: {
+                        //     id: categroyId,
+                        //     name: categoryName,
+                        //     slug: categorySlug,
+                        // },
+                        data:data,
                         success: function (backData) {
                             console.log(backData);
                             if (backData.code == 200) {
@@ -203,6 +211,8 @@
                     });
                 };
             });
+
+            
             // 4.给模态框中的取消按钮设置一个点击事件：清空模态框中的内容
             $('#btnCancel').on('click', function () {
                 // 方法一
