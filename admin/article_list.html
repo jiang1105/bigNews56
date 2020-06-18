@@ -133,7 +133,7 @@
                         type: $('#selCategory').val().trim(),
                         state: $('#selStatus').val().trim(),
                         page: myPage,
-                        perpage: 6,
+                        perpage: 3,
                     },
                     success: function (backData) {
                         console.log(backData);
@@ -141,11 +141,14 @@
                             var res = template('articalList', backData);
                             $('tbody').html(res);
 
-                            if (backData.data.data.length!=0&& callback != null) {
+                            if (backData.data.data.length != 0 && callback != null) {
                                 $('#pagination').show().next('p').hide();
                                 callback(backData);
-                            }else if(backData.data.data.length==0){
+                            } else if (backData.data.data.length == 0 && currentPage == 1) {
                                 $('#pagination').hide().next('p').show();
+                            } else if (backData.data.totalPage == currentPage - 1 && backData.data.data.length == 0) {
+                                currentPage--;
+                                $('#pagination').twbsPagination('changeTotalPages', backData.data.totalPage, currentPage);
                             };
                         };
                     },
@@ -153,7 +156,7 @@
             };
 
 
-
+            var currentPage = 1;
             // 2.一进入页面就发送ajax请求，获取默认的分类和默认状态下的所有文章
             getData(1, function (backData) {
                 $('#pagination').twbsPagination({
@@ -164,6 +167,7 @@
                     prev: "上一页",
                     next: "下一页",
                     onPageClick: function (event, page) {
+                        currentPage = page;
                         getData(page, null);
                     },
                 })
@@ -217,12 +221,38 @@
                 //         };
                 //     },
                 // });
-                getData(1, function (backData) {
-                    $('#pagination').twbsPagination('changeTotalPages', backData.data.totalPage, 1);
+                currentPage=1;
+                getData(currentPage, function (backData) {
+                    $('#pagination').twbsPagination('changeTotalPages', backData.data.totalPage, currentPage);
                 })
             });
 
 
+            // 4.利用文章id删除文章
+            $('tbody').on('click', '.btn-danger', function () {
+                if (confirm('确定删除吗？')) {
+                    var articleId = $(this).attr('data-id');
+                    $.ajax({
+                        type: "post",
+                        url: BigNew.article_delete,
+                        data: {
+                            id: articleId,
+                        },
+                        success: function (backData) {
+                            console.log(backData);
+                            if (backData.code == 204) {
+                                alert(backData.msg);
+                                getData(currentPage, function (backData) {
+                                    // 4.1删除文章也有可能发生页码的改变
+                                    $('#pagination').twbsPagination('changeTotalPages', backData.data.totalPage, currentPage);
+                                });
+
+
+                            };
+                        },
+                    })
+                };
+            });
         });
     </script>
 </body>
