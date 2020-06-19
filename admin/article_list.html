@@ -102,7 +102,7 @@
             <td class="text-center">{{v.data}}</td>
             <td class="text-center">{{v.state}}</td>
             <td class="text-center">
-                <a href="article_edit.html" class="btn btn-default btn-xs">编辑</a>
+                <a href="article_edit.html?id={{v.id}}" class="btn btn-default btn-xs">编辑</a>
                 <a href="javascript:void(0);" data-id='{{v.id}}' class="btn btn-danger btn-xs delete">删除</a>
             </td>
         </tr>
@@ -186,11 +186,7 @@
             //         if (backData.code == 200) {
             //             var res = template('articalList', backData);
             //             $('tbody').html(res);
-
-
-
             //             // 2.1插件的使用
-
             //     };
             //     },
             // });
@@ -220,7 +216,7 @@
                 //         };
                 //     },
                 // });
-                currentPage=1;
+                currentPage = 1;
                 getData(currentPage, function (backData) {
                     $('#pagination').twbsPagination('changeTotalPages', backData.data.totalPage, currentPage);
                 })
@@ -250,6 +246,12 @@
                     })
                 };
             });
+        
+            // 5.点击发表文章按钮设置点击事件
+            $('#release_btn').on('click',function(){
+                parent.$('ul.level02>li:eq(1)').click();
+            });
+        
         });
     </script>
 </body>
