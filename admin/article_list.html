@@ -115,7 +115,7 @@
             $.ajax({
                 url: BigNew.category_list,
                 success: function (backData) {
-                    console.log(backData);
+                    // console.log(backData);
                     if (backData.code == 200) {
                         var res = template('categoryList', backData);
                         $('#selCategory').html(res);
@@ -136,7 +136,7 @@
                         perpage: 3,
                     },
                     success: function (backData) {
-                        console.log(backData);
+                        // console.log(backData);
                         if (backData.code == 200) {
                             var res = template('articalList', backData);
                             $('tbody').html(res);
@@ -234,7 +234,7 @@
                             id: articleId,
                         },
                         success: function (backData) {
-                            console.log(backData);
+                            // console.log(backData);
                             if (backData.code == 204) {
                                 alert(backData.msg);
                                 getData(currentPage, function (backData) {

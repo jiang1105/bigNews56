@@ -66,8 +66,8 @@
 
                         <!-- 日期插件 -->
                         <div class="jeinpbox">
-                            <input type="text" class="jeinput" id="testico" placeholder="YYYY-MM-DD" name='date'>
-                            <div class="icons jebtns" onclick="jeDate('#testico',{trigger:false,format: 'YYYY-MM-DD'})">
+                            <input type="text" class="jeinput" id="testico" placeholder="YYYY-MM-DD" name="date">
+                            <div class="icons jebtns" onclick="jeDate('#testico',{trigger:false,format: 'YYYY-MM-DD'})" style="z-index: 5555555555555555555;">
                             </div>
                         </div>
 
@@ -112,7 +112,7 @@
             $.ajax({
                 url: BigNew.category_list,
                 success: function (backData) {
-                    console.log(backData);
+                    // console.log(backData);
                     if (backData.code == 200) {
                         var res = template('categoryList', backData);
                         $('.form-control').html(res);
@@ -199,7 +199,7 @@
                 // 5.2注意点：在formdata里面追加获取的富文本编辑器的内容和状态
                 var content = editor.txt.html();
                 fd.append('content', content);
-                fd.append('state', '已发布');
+                fd.append('state', '草稿');
                 // 5.3发送ajax请求
                 $.ajax({
                     type: 'post',
@@ -217,14 +217,6 @@
                     },
                 });
             });
-
-
-
-
-
-
-
-
         });
     </script>
 </body>

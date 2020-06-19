@@ -108,7 +108,7 @@
                 $.ajax({
                     url: BigNew.category_list,
                     success: function (backData) {
-                        console.log(backData);
+                        // console.log(backData);
                         if (backData.code == 200) {
                             var res = template('category_list', backData);
                             $('tbody').html(res);
@@ -164,7 +164,7 @@
                             slug: categorySlug,
                         },
                         success: function (backData) {
-                            console.log(backData);
+                            // console.log(backData);
                             if (backData.code == 201) {
                                 // alert(backData.msg);
                                 // 3.3新增成功加载数据重新渲染在页面
@@ -199,7 +199,7 @@
                         // },
                         data:data,
                         success: function (backData) {
-                            console.log(backData);
+                            // console.log(backData);
                             if (backData.code == 200) {
                                 alert(backData.msg);
                                 getData();
@@ -234,7 +234,7 @@
                         id: categoryId,
                     },
                     success: function (backData) {
-                        console.log(backData);
+                        // console.log(backData);
                         if (backData.code == 204) {
                             alert(backData.msg);
                             getData();
