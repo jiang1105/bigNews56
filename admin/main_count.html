@@ -59,19 +59,28 @@
         <div class="column_pannel" id="column_show"></div>
     </div>
 
-
+    <script src="./libs/http.js"></script>
     <!-- 折线图 -->
     <script>
-        var json = '{"code":200,"msg":"获取成功","date":[{"date":"2019-05-20","count":23},{"date":"2019-05-21","count":19},{"date":"2019-05-22","count":29},{"date":"2019-05-23","count":24},{"date":"2019-05-24","count":28},{"date":"2019-05-25","count":28},{"date":"2019-05-26","count":19},{"date":"2019-05-27","count":25},{"date":"2019-05-28","count":25}]}';
-        var obj = JSON.parse(json);
-        loadEchars(obj);
+        // var json = '{"code":200,"msg":"获取成功","date":[{"date":"2019-05-20","count":23},{"date":"2019-05-21","count":19},{"date":"2019-05-22","count":29},{"date":"2019-05-23","count":24},{"date":"2019-05-24","count":28},{"date":"2019-05-25","count":28},{"date":"2019-05-26","count":19},{"date":"2019-05-27","count":25},{"date":"2019-05-28","count":25}]}';
+        // var obj = JSON.parse(json);
+        // loadEchars(obj);
+
+
+        $.ajax({
+            url: 'http://localhost:8080/api/v1/admin/data/article',
+            success: function (backData) {
+                console.log(backData);
+                loadEchars(backData);
+            },
+        });
 
         function loadEchars(obj) {
             // 基于准备好的dom，初始化echarts实例
             var myChart = echarts.init(document.getElementById('curve_show'));
 
-            var data = [];
-            var date = [];
+            var data = [];  //y轴数据
+            var date = [];  //x轴数据
             for (var i = 0; i < obj.date.length; i++) {
                 data.push(obj.date[i].count);
                 date.push(obj.date[i].date);
@@ -81,7 +90,7 @@
                 tooltip: {
                     trigger: 'axis',
                     position: function (pt) {
-                        return [pt[0], '10%'];
+                        return [pt[0] + 10, pt[1] + 10];
                     }
                 },
                 title: {
@@ -146,6 +155,7 @@
             // 使用刚指定的配置项和数据显示图表。
             myChart.setOption(option);
         }
+    
     </script>
 
     <!-- 环形图 -->
@@ -212,11 +222,11 @@
                 axisPointer: {            // 坐标轴指示器，坐标轴触发有效
                     type: 'line'        // 默认为直线，可选为：'line' | 'shadow'
                 },
-                
+
             },
             legend: {
                 data: ['爱生活', '趣美味', '爱旅行', '爱电影', '爱游泳'],
-                top:30
+                top: 30
             },
             grid: {
                 left: '3%',
