@@ -228,7 +228,9 @@
     <!-- 导包template -->
     <script src="./js/template-web.js"></script>
 
-    <!-- 3.一周排行模板 -->
+    <script src="./admin/libs/http.js"></script>
+
+    <!-- 1.一周排行模板 -->
     <script id='rank' type="text/html">
         {{each data v}}
         {{if $index==0}}
@@ -249,7 +251,7 @@
         {{/each}}
     </script>
 
-    <!-- 4.最新评论的模板 -->
+    <!-- 2.最新评论的模板 -->
     <script id='comment' type="text/html">
         {{each data v}}
         <li>
@@ -261,17 +263,33 @@
     </script>
 
 
-    <!-- 5.焦点事件 -->
+    <!-- 3.焦点事件 -->
     <script id='attention' type="text/html">
         {{each data v}}
         <li><a href="./article.html?id={{v.id}}">{{v.intro}}</a></li>
         {{/each}}
     </script>
+    <!-- 4. -->
+    <script id='articalList' type="text/html">
+        {{each data.data v}}
+        <div class="common_news_list">
+            <a href="./article.html?id={{v.id}}" class="list_pic"><img src="{{v.cover}}" alt=""></a>
+            <h4><a href="./article.html?id={{v.id}}">{{v.title}} </a></h4>
+            <p>{{v.intro}}</p>
+            <div class="new_info">
+                <span>标签：{{v.category}}&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<i class="fa fa-eye"></i>&nbsp;阅读( {{v.read}}
+                    )&nbsp;&nbsp;&nbsp;<i class="fa fa-commenting"></i>&nbsp;评论( {{v.comments}} )</span>
+                <b>发布于 {{v.date}}</b>
+            </div>
+        </div>
+    {{/each}}
+    </script>
+
 
     <script>
-        $(function(){
-                 // 3.一周排行
-                 $.ajax({
+        $(function () {
+            // 1.一周排行
+            $.ajax({
                 url: 'http://localhost:8080/api/v1/index/rank',
                 success: function (backData) {
                     // console.log(backData);
@@ -290,7 +308,7 @@
                 },
             });
 
-            // 4.最新评论
+            // 2.最新评论
             $.ajax({
                 url: 'http://localhost:8080/api/v1/index/latest_comment',
                 success: function (backData) {
@@ -302,7 +320,7 @@
                 },
             });
 
-            // 5.焦点关注
+            // 3.焦点关注
             $.ajax({
                 url: 'http://localhost:8080/api/v1/index/attention',
                 success: function (backData) {
@@ -313,6 +331,64 @@
                     };
                 },
             });
+
+            // 4.获取跟随url传递过来的数据
+            var value = window.location.search.split('=');
+            var value1 = value[0];
+            var value2 = value[1];
+            console.log(value1);
+            // console.log(value2);
+
+
+            // 4.1判断value传递过来的数据
+            if (value == '') {
+                // 4.2如果是直接从地址栏进入的就返回首页
+                window.location.href = './index.html'
+            } else if (value1 == '?categoryId') {
+                // alert('分类');
+                $.ajax({
+                    url: 'http://localhost:8080/api/v1/index/search',
+                    data: {
+                        type: value2,
+                    },
+                    success: function (backData) {
+                        // console.log(backData);
+                        if (backData.code == 200) {
+                            if (backData.data.data.length > 0) {
+                                var res = template('articalList', backData);
+                                $('.left_con').html('<div class="list_title"><h3>' + backData.data.data[0].category + '</h3></div>' + res);
+                            } else {
+                                $('.left_con').html('<div class="list_title"><h3>没有数据</h3></div>');
+                            };
+                        };
+                    },
+                })
+            } else if (value1 == '?search') {
+                // alert('搜索按钮');
+                value2 = decodeURI(value2);
+                $.ajax({
+                    url: 'http://localhost:8080/api/v1/index/search',
+                    data: {
+                        key: value2,
+                    },
+                    success: function (backData) {
+                        console.log(backData);
+                        if (backData.code == 200) {
+                            if (backData.data.data.length > 0) {
+                                var res = template('articalList', backData);
+                                $('.left_con').html('<div class="list_title"><h3>关键词：' + value2 + '</h3></div>' + res);
+                            } else {
+                                $('.left_con').html('<div class="list_title"><h3>没有数据</h3></div>');
+                            };
+                        };
+                    },
+                })
+            };
+
+
+            // 
+
+
 
 
         });

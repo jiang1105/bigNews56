@@ -84,7 +84,7 @@
           type: "post",
           // url: "http://localhost:8080/api/v1/admin/user/login",
           // 利用沙箱模式创建一个js文件存储所有接口的url
-          url:BigNew.user_login,
+          url: BigNew.user_login,
           data: {
             username: username,
             password: password,
@@ -97,11 +97,11 @@
             if (backData.code == 200) {
 
               // 把返回的token给保存起来
-              localStorage.setItem('token',backData.token);
+              localStorage.setItem('token', backData.token);
 
               // 模态框的使用第二部：利用模态框的方法
               $('#myModal').on('hidden.bs.modal', function (e) {
-              location.href='./index.html';
+                location.href = './index.html';
               })
             }
           },

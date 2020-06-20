@@ -12,6 +12,10 @@
   <link rel="stylesheet" href="css/main.css">
   <script src="./libs/jquery-1.12.4.min.js"></script>
   <script src="./libs/template-web.js"></script>
+
+  <!-- 分页需要的文件 -->
+  <script src="./libs//bootstrap/js/bootstrap.min.js"></script>
+  <script src="./libs/jquery.twbsPagination.js"></script>
 </head>
 
 <body>
@@ -155,11 +159,145 @@
           <li class="page-item next"><a href="#" class="page-link">下一页</a></li>
           <li class="page-item last"><a href="#" class="page-link">尾页</a></li>
         </ul>
+
         <ul id="pagination" class="pagination-sm"></ul>
       </div>
 
     </div>
   </div>
+  <script src="./libs/http.js"></script>
+
+  <!-- 评论模板 -->
+  <script type="text/html" id='commentList'>
+    {{each data.data v}}
+    {{if v.state=='待审核'}}
+    <tr class='danger'>
+    {{else}}
+    <tr>
+    {{/if}}
+      <td>{{v.author}}</td>
+      <td>{{v.content}}</td>
+      <td>{{v.title}}</td>
+      <td>{{v.date}}--{{v.time}}</td>
+      <td>{{v.state}}</td>
+      <td class="text-center">
+        {{if v.state=='待审核'}}
+        <a href="javascript:void(0);;" data-id='{{v.id}}' class="btn btn-info btn-pizhun btn-xs">批准</a>
+        {{else if v.state=='已通过'}}
+        <a href="javascript:void(0);;" data-id='{{v.id}}' class="btn btn-warning btn-jujue btn-xs">拒绝</a>
+        {{/if}}
+        <a href="javascript:void(0);;" data-id='{{v.id}}' class="btn btn-danger btn-delete btn-xs">删除</a>
+      </td>
+    </tr>
+    {{/each}}
+  </script>
+  <script>
+    $(function () {
+      // 1.一进入评论页面就发送ajax请求，获取所有的评论，模板引擎渲染
+      function getData(myPage, callback) {
+        $.ajax({
+          // type: 'post',
+          url: BigNew.comment_list,
+          data: {
+            page: myPage,
+            perpage: 5,
+          },
+          success: function (backData) {
+            console.log(backData);
+            if (backData.code == 200) {
+              var res = template('commentList', backData);
+              $('tbody').html(res);
+
+              // 判断
+              if ( callback != null) {
+                callback(backData);
+              };
+            };
+          },
+        });
+      }
+
+      // 声明一个变量用来记录档期那页
+      var currentPage;
+      getData(1, function (backData) {
+        // 分页结构
+        $('#pagination').twbsPagination({
+          totalPages: backData.data.totalPage,  //总页数
+          visiblePages: 10,
+          first: '首页',
+          last: '尾页',
+          prev: "上一页",
+          next: "下一页",
+          onPageClick: function (event, page) {
+            currentPage = page;  //给当前页赋值
+            getData(page, null);
+          },
+        })
+      });
+
+      // 2.评论审核通过
+      $('tbody').on('click', 'a.btn-pizhun', function () {
+        // 2.1获取当前评论ID
+        var commentId = $(this).attr('data-id');
+        $.ajax({
+          type: 'post',
+          url: BigNew.comment_pass,
+          data: {
+            id: commentId,
+          },
+          success: function (backData) {
+            console.log(backData);
+            if (backData.code == 200) {
+              alert('评论通过！')
+              getData(currentPage,null);
+
+            };
+          },
+        });
+      });
+
+
+      // 3.评论审核拒绝
+      $('tbody').on('click', 'a.btn-jujue', function () {
+        var commentId = $(this).attr('data-id');
+        $.ajax({
+          type: 'post',
+          url: BigNew.comment_reject,
+          data: {
+            id: commentId,
+          },
+          success: function (backData) {
+            console.log(backData);
+            if (backData.code == 200) {
+              alert('拒绝！')
+              getData(currentPage,null);
+            };
+          },
+        });
+      });
+
+      // 4.评论审核删除
+      $('tbody').on('click', 'a.btn-delete', function () {
+        if (confirm('确定删除吗？')) {
+          var commentId = $(this).attr('data-id');
+          $.ajax({
+            type: 'post',
+            url: BigNew.comment_delete,
+            data: {
+              id: commentId,
+            },
+            success: function (backData) {
+              console.log(backData);
+              if (backData.code == 200) {
+                alert('删除成功！')
+                getData(currentPage,null);
+              };
+            },
+          });
+        }
+      });
+    });
+  </script>
 </body>
 
 </html>
